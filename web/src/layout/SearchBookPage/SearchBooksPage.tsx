@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import BookModel from "../../models/BookModel";
-import { Pagination } from "../utils/Pagination";
-import { SpinnerLoading } from "../utils/SpinnerLoading";
+import { Pagination } from "../Utils/Pagination";
+import { SpinnerLoading } from "../Utils/SpinnerLoading";
 import { SearchBook } from "./components/SearchBook";
 
 export const SearchBooksPage = () => {

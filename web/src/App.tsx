@@ -6,6 +6,7 @@ import { HomePage } from "./layout/HomePage/HomePage";
 import { Footer } from "./layout/NavbarAndFooter/Footer";
 import { Navbar } from "./layout/NavbarAndFooter/Navbar";
 import { SearchBooksPage } from "./layout/SearchBookPage/SearchBooksPage";
+import { BookCheckoutPage } from "./layout/BookCheckoutPage/BookCheckoutPage";
 
 function App() {
   return (
@@ -21,6 +22,9 @@ function App() {
           </Route>
           <Route path="/search">
             <SearchBooksPage />
+          </Route>
+          <Route path="/checkout/:bookId">
+            <BookCheckoutPage />
           </Route>
         </Switch>
       </div>

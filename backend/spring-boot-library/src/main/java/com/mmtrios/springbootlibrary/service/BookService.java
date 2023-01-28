@@ -5,6 +5,7 @@ import com.mmtrios.springbootlibrary.dao.CheckoutRepository;
 import com.mmtrios.springbootlibrary.entity.Book;
 import com.mmtrios.springbootlibrary.entity.Checkout;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class BookService {
     public Book checkoutBook(String userEmail, Long bookId) throws Exception {
         Optional<Book> book = bookRepository.findById(bookId);
 
-        Checkout validateCheckout = checkoutRepository.findByEmailAndBookId(userEmail, bookId);
+        Checkout validateCheckout = checkoutRepository.findByUserEmailAndBookId(userEmail, bookId);
 
         if(!book.isPresent() || validateCheckout != null || book.get().getCopiesAvailable() <= 0){
             throw new Exception("Book doesn't exist or already checked out by user");
@@ -38,5 +39,19 @@ public class BookService {
         checkoutRepository.save(checkout);
 
         return book.get();
+    }
+
+    public Boolean checkoutBookByUser(String userEmail, Long bookId){
+        Checkout validateCheckout = checkoutRepository.findByUserEmailAndBookId(userEmail, bookId);
+
+        if(validateCheckout == null){
+            return false;
+        }
+        return true;
+    }
+
+    public int currentLoansCount(String userEmail){
+        List<Checkout> checkoutList = checkoutRepository.findBooksByUserEmail(userEmail);
+        return checkoutList.size();
     }
 }

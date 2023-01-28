@@ -25,3 +25,5 @@ node_modules
 
 # okta info
 oktaConfig.ts
+backend/spring-boot-library/src/main/resources/application.properties
+*.properties

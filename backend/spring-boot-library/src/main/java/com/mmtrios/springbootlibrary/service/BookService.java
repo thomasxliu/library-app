@@ -4,9 +4,14 @@ import com.mmtrios.springbootlibrary.dao.BookRepository;
 import com.mmtrios.springbootlibrary.dao.CheckoutRepository;
 import com.mmtrios.springbootlibrary.entity.Book;
 import com.mmtrios.springbootlibrary.entity.Checkout;
+import com.mmtrios.springbootlibrary.responsemodels.ShelfCurrentLoansResponse;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,5 +58,40 @@ public class BookService {
     public int currentLoansCount(String userEmail){
         List<Checkout> checkoutList = checkoutRepository.findBooksByUserEmail(userEmail);
         return checkoutList.size();
+    }
+
+    public List<ShelfCurrentLoansResponse> currentLoans(String userEmail) throws Exception {
+
+        List<ShelfCurrentLoansResponse> shelfCurrentLoansResponses = new ArrayList<>();
+
+        List<Checkout> checkoutList = checkoutRepository.findBooksByUserEmail(userEmail);
+        List<Long> bookIdList = new ArrayList<>();
+
+        for (Checkout i: checkoutList) {
+            bookIdList.add(i.getBookId());
+        }
+
+        List<Book> books = bookRepository.findBooksByBookIds(bookIdList);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (Book book : books) {
+            Optional<Checkout> checkout = checkoutList.stream()
+                    .filter(x -> x.getBookId() == book.getId()).findFirst();
+
+            if (checkout.isPresent()) {
+
+                Date d1 = sdf.parse(checkout.get().getReturnDate());
+                Date d2 = sdf.parse(LocalDate.now().toString());
+
+                TimeUnit time = TimeUnit.DAYS;
+
+                long difference_In_Time = time.convert(d1.getTime() - d2.getTime(),
+                        TimeUnit.MILLISECONDS);
+
+                shelfCurrentLoansResponses.add(new ShelfCurrentLoansResponse(book, (int) difference_In_Time));
+            }
+        }
+        return shelfCurrentLoansResponses;
     }
 }

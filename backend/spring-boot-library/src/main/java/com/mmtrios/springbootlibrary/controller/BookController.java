@@ -1,8 +1,10 @@
 package com.mmtrios.springbootlibrary.controller;
 
 import com.mmtrios.springbootlibrary.entity.Book;
+import com.mmtrios.springbootlibrary.responsemodels.ShelfCurrentLoansResponse;
 import com.mmtrios.springbootlibrary.service.BookService;
 import com.mmtrios.springbootlibrary.utils.ExtractJWT;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +23,12 @@ public class BookController {
     @Autowired
     public BookController(BookService bookService){
         this. bookService = bookService;
+    }
+
+    @GetMapping("/secure/currentloans")
+    public List<ShelfCurrentLoansResponse> currentLoans(@RequestHeader(value="Authorization") String token) throws Exception{
+        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+        return bookService.currentLoans(userEmail);
     }
 
     @PutMapping("/secure/checkout")

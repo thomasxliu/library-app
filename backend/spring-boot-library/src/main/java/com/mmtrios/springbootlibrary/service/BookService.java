@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import javax.swing.text.html.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,5 +94,20 @@ public class BookService {
             }
         }
         return shelfCurrentLoansResponses;
+    }
+
+    public void returnBook(String userEmail, Long bookId) throws Exception{
+        Optional<Book> book = bookRepository.findById(bookId);
+
+        Checkout validateCheckout = checkoutRepository.findByUserEmailAndBookId(userEmail, bookId);
+
+        if(!book.isPresent() || validateCheckout == null){
+            throw new Exception("Book does not exist or not checked out by user");
+        }
+
+        book.get().setCopiesAvailable(book.get().getCopiesAvailable() + 1);
+
+        bookRepository.save(book.get());
+        checkoutRepository.deleteById(validateCheckout.getId());
     }
 }

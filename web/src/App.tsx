@@ -11,6 +11,7 @@ import { SearchBooksPage } from "./layout/SearchBookPage/SearchBooksPage";
 import { BookCheckoutPage } from "./layout/BookCheckoutPage/BookCheckoutPage";
 import { oktaConfig } from "./lib/oktaConfig";
 import LoginWidget from "./Auth/LoginWidget";
+import { ReviewListPage } from "./layout/BookCheckoutPage/ReviewListPage";
 
 const oktaAuth = new OktaAuth(oktaConfig);
 
@@ -39,6 +40,9 @@ function App() {
             </Route>
             <Route path="/home">
               <HomePage />
+            </Route>
+            <Route path="/reviewlist/:bookId">
+              <ReviewListPage />
             </Route>
             <Route path="/search">
               <SearchBooksPage />

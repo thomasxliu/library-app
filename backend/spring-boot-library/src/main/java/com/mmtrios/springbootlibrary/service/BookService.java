@@ -2,8 +2,10 @@ package com.mmtrios.springbootlibrary.service;
 
 import com.mmtrios.springbootlibrary.dao.BookRepository;
 import com.mmtrios.springbootlibrary.dao.CheckoutRepository;
+import com.mmtrios.springbootlibrary.dao.HistoryRepository;
 import com.mmtrios.springbootlibrary.entity.Book;
 import com.mmtrios.springbootlibrary.entity.Checkout;
+import com.mmtrios.springbootlibrary.entity.History;
 import com.mmtrios.springbootlibrary.responsemodels.ShelfCurrentLoansResponse;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -12,8 +14,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import javax.swing.text.html.Option;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookService {
     private BookRepository bookRepository;
     private CheckoutRepository checkoutRepository;
+    private HistoryRepository historyRepository;
 
-    public BookService (BookRepository bookRepository, CheckoutRepository checkoutRepository){
+    public BookService (BookRepository bookRepository, CheckoutRepository checkoutRepository, HistoryRepository historyRepository){
         this.bookRepository = bookRepository;
         this.checkoutRepository = checkoutRepository;
+        this.historyRepository = historyRepository;
     }
 
     public Book checkoutBook(String userEmail, Long bookId) throws Exception {
@@ -109,6 +111,9 @@ public class BookService {
 
         bookRepository.save(book.get());
         checkoutRepository.deleteById(validateCheckout.getId());
+
+        History history = new History(userEmail, validateCheckout.getCheckoutDate(), LocalDate.now().toString(), book.get().getTitle(), book.get().getAuthor(), book.get().getDescription(), book.get().getImg());
+        historyRepository.save(history);
     }
 
     public void renewLoan(String userEmail, Long bookId) throws Exception {
